@@ -2,8 +2,8 @@ userid="group"
 
 sensors = ["temp", "light"]
 topic = "ubiss/"
-#server="130.225.57.224"
-server ="192.168.10.1"
+server="130.225.57.224"
+#server ="192.168.10.1"
 #fileserver="192.168.10.1"
 
 
