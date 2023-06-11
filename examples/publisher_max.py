@@ -45,7 +45,7 @@ data3 = [0] * arr_size
 timestamps3 = [0] * arr_size
 while(1):
 
-    time.sleep(5)
+    time.sleep(1)
 
     sample,ts = sensor.measure_low_res()
     data1[counter] = sample
@@ -57,6 +57,7 @@ while(1):
     sample, ts = sensor.measure_high_res2()
     data3[counter] = sample
     timestamps3[counter] = ts
+    sensor.set_sensitivity((sensor.mtreg + 10) % 255)
 
     counter+=1
 
