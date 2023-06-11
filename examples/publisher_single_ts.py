@@ -25,8 +25,8 @@ client.connect(util.server,1883,60)
 # intialize sensors, so we can get data out 
 bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
 sensor = sapi.BH1750(bus)
-#bme680_sensor = sapi.sensor_bme680()  # Temperature, and Humidity sensor
-#sgp30_sensor = sapi.sensor_sgp30() # Air quality sensor
+bme680_sensor = sapi.sensor_bme680()  # Temperature, and Humidity sensor
+sgp30_sensor = sapi.sensor_sgp30() # Air quality sensor
 
 ######################### Logic for furter programming #######################
 
