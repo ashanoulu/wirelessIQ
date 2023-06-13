@@ -43,7 +43,9 @@ def send_topics(topic_payload,userid,client):
 
         serialized_input = serialize(payload,timestamp,topic_payload['topic'][i])
         output = output + "," + serialized_input
-         
+
+    print('Full topic - ', full_topic)
+    print('Output - ', output)
     client.publish(full_topic, output)
 
     return
