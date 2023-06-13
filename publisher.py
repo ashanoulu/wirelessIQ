@@ -22,7 +22,7 @@ client.connect(util.server,1883,60)
 
 
 
-# intialize sensors, so we can get data out 
+# intialize sensors, so we can get data out
 bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
 sensor = sapi.BH1750(bus)
 bme680_sensor = sapi.sensor_bme680()  # Temperature, and Humidity sensor
@@ -102,8 +102,9 @@ while(1):
         extra_counter+=1
         counter = 0
 
-        data=util.prepare_payload(["temp", "quality"], [data_temp, data_airquality],
-                                   [timestamps_temp, timestamps_airquality])
+        data=util.prepare_payload(["temp", "quality", "light_low", "light_h1", "light_h2"],
+                                  [data_temp, data_airquality, data_lowres, data_highres, data_highres2],
+                                   [timestamps_temp, timestamps_airquality, timestamps_lowres, timestamps_highres, timestamps_highres2])
         util.send_topics(data,userid,client)
         data_light = [0] * arr_size
         timestamps_light = [0] * arr_size
@@ -122,4 +123,4 @@ while(1):
         if extra_counter == 10:
             exit()
 
-        
+
