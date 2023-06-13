@@ -51,13 +51,13 @@ data_airquality = [0] * arr_size
 timestamps_airquality = [0] * arr_size
 
 # Light - BH1750
-data_lowres = []*arr_size
-timestamps_lowres = []*arr_size
+data_lowres = [0]*arr_size
+timestamps_lowres = [0]*arr_size
 
-data_highres = []*arr_size
-timestamps_highres = []*arr_size
-data_highres2 = []*arr_size
-timestamps_highres2 = []*arr_size
+data_highres = [0]*arr_size
+timestamps_highres = [0]*arr_size
+data_highres2 = [0]*arr_size
+timestamps_highres2 = [0]*arr_size
 
 
 while(1):

@@ -1,4 +1,4 @@
-userid="group"
+userid="wirelessIQ"
 
 sensors = ["temp", "light"]
 topic = "ubiss/"
