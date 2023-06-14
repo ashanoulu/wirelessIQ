@@ -6,7 +6,7 @@ import os
 import time
 
 userid=util.userid
-data_to_download="temp"
+data_to_download="all"
 
 def write_to_file(name, rawdata):
 	
