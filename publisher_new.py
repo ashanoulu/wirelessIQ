@@ -84,16 +84,16 @@ class SensorDataCollection:
 
         # Air quality - SGP30
         self.data_airquality = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_airquality = np_array_init_and_fill(self.arr_size, "")
+        self.timestamps_airquality = [0] * self.arr_size
 
         # Light - BH1750
         self.data_lowres = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_lowres = np_array_init_and_fill(self.arr_size, "")
+        self.timestamps_lowres = [0] * self.arr_size
 
         self.data_highres = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_highres = np_array_init_and_fill(self.arr_size, "")
+        self.timestamps_highres = [0] * self.arr_size
         self.data_highres2 = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_highres2 = np_array_init_and_fill(self.arr_size, "")
+        self.timestamps_highres2 = [0] * self.arr_size
 
         self.stat_window_status = list()
         self.stat_light_status = list()
