@@ -74,7 +74,7 @@ class SensorDataCollection:
     def __reset_values(self):
         # Temperature, pressure and humidty - BME680
         self.data_temp = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_temp = np_array_init_and_fill(self.arr_size, 0)
+        self.timestamps_temp = np_array_init_and_fill(self.arr_size, "")
 
         # self.data_pressure = np_array_init_and_fill(self.arr_size, 0)
         # self.timestamps_pressure = np_array_init_and_fill(self.arr_size, 0)
@@ -84,16 +84,16 @@ class SensorDataCollection:
 
         # Air quality - SGP30
         self.data_airquality = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_airquality = np_array_init_and_fill(self.arr_size, 0)
+        self.timestamps_airquality = np_array_init_and_fill(self.arr_size, "")
 
         # Light - BH1750
         self.data_lowres = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_lowres = np_array_init_and_fill(self.arr_size, 0)
+        self.timestamps_lowres = np_array_init_and_fill(self.arr_size, "")
 
         self.data_highres = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_highres = np_array_init_and_fill(self.arr_size, 0)
+        self.timestamps_highres = np_array_init_and_fill(self.arr_size, "")
         self.data_highres2 = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_highres2 = np_array_init_and_fill(self.arr_size, 0)
+        self.timestamps_highres2 = np_array_init_and_fill(self.arr_size, "")
 
         self.stat_window_status = list()
         self.stat_light_status = list()
