@@ -15,6 +15,7 @@ CONST_SLEEP_TIMER = 2
 CONST_KEEP_ALIVE = 600
 CONST_STAT_TIME = 300  # 3600
 CONST_LIGHT_DIFF_THRESHOLD = 200
+CONST_AQ_THRESHOLD = 50
 
 # The callback for when the client receives a CONNACK response from the server.
 
@@ -150,14 +151,13 @@ class SensorDataCollection:
         return 0
 
     def collect_window_status(self):
-        open_status = self.counter % 2
-        # TODO Calculate instead of above. Return 1 or 0 for open close status (value must be int/float)
-        if len(self.stat_window_status) > 1 and open_status == self.stat_window_status[-1]:
-            return 0
-        ts = sapi.get_timestamp()  # TODO Add timestamp from original calculation
-        self.stat_window_status.append(open_status)
-        self.stat_window_status_ts.append(ts)
-        return 0
+        diff_array = np.diff(self.data_airquality)
+        dfidx = 0
+        for df in diff_array:
+            if df >= CONST_AQ_THRESHOLD or df <= (-1 * CONST_AQ_THRESHOLD):
+                self.stat_window_status.append(self.data_airquality[dfidx + 1])
+                self.stat_window_status_ts.append(self.timestamps_airquality[dfidx + 1])
+            dfidx = dfidx + 1
 
     def collect_light_status(self):
         diff_array = np.diff(self.data_highres)  # TODO high_res
