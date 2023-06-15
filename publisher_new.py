@@ -176,8 +176,6 @@ class SensorDataCollection:
         # r_pressure, et_pressure = self.collect_pressure()
         self.collect_air_quality()
         self.collect_light()
-        self.collect_window_status()
-        self.collect_light_status()
         # print("et_start, et_temp, et_air_quality, et_light, et_window_status, et_light_status, et_end")
         # print(et_start, et_temp, et_air_quality, et_light, et_window_status, et_light_status, sapi.get_timestamp())
 
@@ -227,6 +225,9 @@ class SensorDataCollection:
 
             data_temp_max_index = self.data_temp.argmax(axis=0)
             data_co2_max_index = self.data_airquality.argmax(axis=0)
+
+            self.collect_window_status()
+            self.collect_light_status()
 
             # StrDef.ST_TEMPERATURE_AVG
             # , StrDef.ST_TEMPERATURE_MAX
