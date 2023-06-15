@@ -238,15 +238,15 @@ class SensorDataCollection:
 
             array_stat_values = [
                 [self.data_temp.mean()]
-                , [5] # [self.data_temp.std()]
+                , [99] #self.data_temp.std()]
                 , [self.data_temp[data_temp_max_index]]
                 , [self.data_airquality.mean()]
-                , [5] # [self.data_airquality.std()]
+                , [99] #[self.data_airquality.std()]
                 , [self.data_airquality[data_co2_max_index]]
                 , [self.data_highres.mean()]  # TODO which light measure to use?
-                , [5] # [self.data_highres.std()]
-                , self.stat_window_status
-                , self.stat_light_status
+                , [99] # [self.data_highres.std()]
+                , [99,99] # self.stat_window_status
+                , [999,999] # self.stat_light_status
             ]
 
             array_stat_ts = [
@@ -258,8 +258,8 @@ class SensorDataCollection:
                 , [self.timestamps_airquality[data_co2_max_index]]
                 , [self.timestamps_highres[0]]  # TODO which light measure to use?
                 , [self.timestamps_highres[0]]
-                , self.stat_window_status_ts
-                , self.stat_light_status_ts
+                , [self.timestamps_highres[0],self.timestamps_highres[0] ] #self.stat_window_status_ts
+                , [self.timestamps_highres[0],self.timestamps_highres[0] ] #self.stat_light_status_ts
             ]
 
             data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
@@ -284,38 +284,8 @@ class SensorDataCollection:
 # Opt : send min:second and infer hour from received time : sensor_api.py: get_timestamp():
 
 sensing = SensorDataCollection()
-#
-# while 1:
-#     sensing.periodical_stats()
-#
-array_stat_values = [
-                [4]
-                , [5] # [self.data_temp.std()]
-                , [10]
-                , [5]
-                , [8] # [self.data_airquality.std()]
-                , [4]
-                , [3453]  # TODO which light measure to use?
-                , [5] # [self.data_highres.std()]
-                , [11,22]
-                , [234, 324]
-            ]
 
-ts = sapi.get_timestamp()
-array_stat_ts = [
-                [ts]
-                , [ts]
-                , [ts]
-                , [ts]
-                , [ts]
-                , [ts]
-                , [ts]
-                , [ts]
-                , [ts, ts]
-                , [ts, ts]
-            ]
-
-stat_data = util.prepare_payload(array_stat_keys, array_stat_values, array_stat_ts)
-util.send_topics(stat_data, userid, client)
+while 1:
+    sensing.periodical_stats()
 
 client.loop_forever()
