@@ -1,14 +1,13 @@
 import time
 from datetime import datetime, timedelta
 
+import numpy as np
 import paho.mqtt.client as mqtt
-import util
-import sensor_api as sapi
 import smbus
 
+import sensor_api as sapi
+import util
 from StrDef import StrDef
-from timer_wp import timer
-import numpy as np
 
 # WirelessIQ Parameters
 CONST_SLEEP_TIMER = 2
@@ -170,7 +169,7 @@ class SensorDataCollection:
 
     def periodical_stats(self):
         time.sleep(CONST_SLEEP_TIMER)  # TODO when to sleep
-        et_start = sapi.get_timestamp()
+        # et_start = sapi.get_timestamp()
         self.collect_temperature()
         # r_humidity, et_humidity = self.collect_humidity()
         # r_pressure, et_pressure = self.collect_pressure()
@@ -183,7 +182,7 @@ class SensorDataCollection:
 
         if self.counter == self.arr_size:
             self.counter = 0
-
+            t_start = time.time()  # Start timer
             # StrDef.SEN_TEMPERATURE
             # , StrDef.SEN_HUMIDITY
             # , StrDef.SEN_PRESSURE
@@ -202,26 +201,26 @@ class SensorDataCollection:
             #     , self.timestamps_highres2
             # ]
 
-            array_timestamps = [
-                [self.timestamps_temp[0]]
-                # , [self.timestamps_humidity[0]]
-                # , [self.timestamps_pressure[0]]
-                , [self.timestamps_airquality[0]]
-                # , [self.timestamps_lowres[0]]
-                , [self.timestamps_highres[0]]
-                # , [self.timestamps_highres2[0]]
-            ]
-
-            # TODO numpy to list conversion?
-            array_sensor_values = [
-                self.data_temp
-                # , self.data_humidity
-                # , self.data_pressure
-                , self.data_airquality
-                # , self.data_lowres
-                , self.data_highres
-                # , self.data_highres2
-            ]
+            # array_timestamps = [
+            #     [self.timestamps_temp[0]]
+            #     # , [self.timestamps_humidity[0]]
+            #     # , [self.timestamps_pressure[0]]
+            #     , [self.timestamps_airquality[0]]
+            #     # , [self.timestamps_lowres[0]]
+            #     , [self.timestamps_highres[0]]
+            #     # , [self.timestamps_highres2[0]]
+            # ]
+            #
+            # # TODO numpy to list conversion?
+            # array_sensor_values = [
+            #     self.data_temp
+            #     # , self.data_humidity
+            #     # , self.data_pressure
+            #     , self.data_airquality
+            #     # , self.data_lowres
+            #     , self.data_highres
+            #     # , self.data_highres2
+            # ]
 
             data_temp_max_index = self.data_temp.argmax(axis=0)
             data_co2_max_index = self.data_airquality.argmax(axis=0)
@@ -267,10 +266,13 @@ class SensorDataCollection:
             # data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
             # util.send_topics(data, userid, client)
 
+            t_end = time.time()  # End timer
+            exec_time = t_end - t_start
             stat_data = util.prepare_payload(array_stat_keys, array_stat_values, array_stat_ts)
             util.send_topics(stat_data, userid, client)
 
             self.__reset_values()
+            print("Execution time:", exec_time)
 
 
 sensing = SensorDataCollection()
