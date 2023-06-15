@@ -101,7 +101,7 @@ class SensorDataCollection:
         self.stat_window_status_ts = list()
         self.stat_light_status_ts = list()
 
-    @timer
+
     def collect_temperature(self):
         # Temperature sample in celcius
         temp_sample, ts_temp = bme680_sensor.get_temp()
@@ -126,7 +126,6 @@ class SensorDataCollection:
     #     self.timestamps_pressure[self.counter] = ts_pressure
     #     return 0
 
-    @timer
     def collect_air_quality(self):
         # air quality (CO2)
         airqual_sample, ts_qual = sgp30_sensor.get_sample()
@@ -134,7 +133,6 @@ class SensorDataCollection:
         self.timestamps_airquality[self.counter] = ts_qual
         return 0
 
-    @timer
     def collect_light(self):
         # Light samples Lx
         sample, ts = sensor.measure_low_res()
@@ -150,7 +148,6 @@ class SensorDataCollection:
         sensor.set_sensitivity((sensor.mtreg + 10) % 255)
         return 0
 
-    @timer
     def collect_window_status(self):
         open_status = self.counter % 2
         # TODO Calculate instead of above. Return 1 or 0 for open close status (value must be int/float)
@@ -161,7 +158,7 @@ class SensorDataCollection:
         self.stat_window_status_ts.append(ts)
         return 0
 
-    @timer
+
     def collect_light_status(self):
         open_status = (self.counter + 1) % 2
         # TODO Calculate instead of above. Return 1 or 0 for open close status (value must be int/float)
@@ -175,15 +172,15 @@ class SensorDataCollection:
     def periodical_stats(self):
         time.sleep(CONST_SLEEP_TIMER)  # TODO when to sleep
         et_start = sapi.get_timestamp()
-        r_temp, et_temp = self.collect_temperature()
+        self.collect_temperature()
         # r_humidity, et_humidity = self.collect_humidity()
         # r_pressure, et_pressure = self.collect_pressure()
-        r_air_quality, et_air_quality = self.collect_air_quality()
-        r_light, et_light = self.collect_light()
-        r_window_status, et_window_status = self.collect_window_status()
-        r_light_status, et_light_status = self.collect_light_status()
-        print("et_start, et_temp, et_air_quality, et_light, et_window_status, et_light_status, et_end")
-        print(et_start, et_temp, et_air_quality, et_light, et_window_status, et_light_status, sapi.get_timestamp())
+        self.collect_air_quality()
+        self.collect_light()
+        self.collect_window_status()
+        self.collect_light_status()
+        # print("et_start, et_temp, et_air_quality, et_light, et_window_status, et_light_status, et_end")
+        # print(et_start, et_temp, et_air_quality, et_light, et_window_status, et_light_status, sapi.get_timestamp())
 
         self.counter += 1
 
