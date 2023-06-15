@@ -14,6 +14,7 @@ import numpy as np
 CONST_SLEEP_TIMER = 2
 CONST_KEEP_ALIVE = 600
 CONST_STAT_TIME = 300  # 3600
+CONST_LIGHT_DIFF_THRESHOLD = 200
 
 # The callback for when the client receives a CONNACK response from the server.
 
@@ -88,13 +89,13 @@ class SensorDataCollection:
         self.timestamps_airquality = [0] * self.arr_size
 
         # Light - BH1750
-        self.data_lowres = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_lowres = [0] * self.arr_size
+        # self.data_lowres = np_array_init_and_fill(self.arr_size, 0)
+        # self.timestamps_lowres = [0] * self.arr_size
 
         self.data_highres = np_array_init_and_fill(self.arr_size, 0)
         self.timestamps_highres = [0] * self.arr_size
-        self.data_highres2 = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_highres2 = [0] * self.arr_size
+        # self.data_highres2 = np_array_init_and_fill(self.arr_size, 0)
+        # self.timestamps_highres2 = [0] * self.arr_size
 
         self.stat_window_status = list()
         self.stat_light_status = list()
@@ -134,17 +135,17 @@ class SensorDataCollection:
         return 0
 
     def collect_light(self):
-        # Light samples Lx
-        sample, ts = sensor.measure_low_res()
-        self.data_lowres[self.counter] = sample
-        self.timestamps_lowres[self.counter] = ts
+        # Light samples Lx TODO
+        # sample, ts = sensor.measure_low_res()
+        # self.data_lowres[self.counter] = sample
+        # self.timestamps_lowres[self.counter] = ts
 
         sample, ts = sensor.measure_high_res()
         self.data_highres[self.counter] = sample
         self.timestamps_highres[self.counter] = ts
-        sample, ts = sensor.measure_high_res2()
-        self.data_highres2[self.counter] = sample
-        self.timestamps_highres2[self.counter] = ts
+        # sample, ts = sensor.measure_high_res2()
+        # self.data_highres2[self.counter] = sample
+        # self.timestamps_highres2[self.counter] = ts
         sensor.set_sensitivity((sensor.mtreg + 10) % 255)
         return 0
 
@@ -159,14 +160,13 @@ class SensorDataCollection:
         return 0
 
     def collect_light_status(self):
-        open_status = (self.counter + 1) % 2
-        # TODO Calculate instead of above. Return 1 or 0 for open close status (value must be int/float)
-        if len(self.stat_light_status) > 1 and open_status == self.stat_light_status[-1]:
-            return 0
-        ts = sapi.get_timestamp()  # TODO Add timestamp from original calculation
-        self.stat_light_status.append(open_status)
-        self.stat_light_status_ts.append(ts)
-        return 0
+        diff_array = np.diff(self.data_highres)  # TODO high_res
+        dfidx = 0
+        for df in diff_array:
+            if df >= CONST_LIGHT_DIFF_THRESHOLD or df <= (-1 * CONST_LIGHT_DIFF_THRESHOLD):
+                self.stat_light_status.append(self.data_highres[dfidx + 1])
+                self.stat_light_status_ts.append(self.timestamps_highres[dfidx + 1])
+            dfidx = dfidx + 1
 
     def periodical_stats(self):
         time.sleep(CONST_SLEEP_TIMER)  # TODO when to sleep
@@ -209,9 +209,9 @@ class SensorDataCollection:
                 # , [self.timestamps_humidity[0]]
                 # , [self.timestamps_pressure[0]]
                 , [self.timestamps_airquality[0]]
-                , [self.timestamps_lowres[0]]
+                # , [self.timestamps_lowres[0]]
                 , [self.timestamps_highres[0]]
-                , [self.timestamps_highres2[0]]
+                # , [self.timestamps_highres2[0]]
             ]
 
             # TODO numpy to list conversion?
@@ -220,9 +220,9 @@ class SensorDataCollection:
                 # , self.data_humidity
                 # , self.data_pressure
                 , self.data_airquality
-                , self.data_lowres
+                # , self.data_lowres
                 , self.data_highres
-                , self.data_highres2
+                # , self.data_highres2
             ]
 
             data_temp_max_index = self.data_temp.argmax(axis=0)
@@ -256,7 +256,7 @@ class SensorDataCollection:
                 , [self.timestamps_airquality[0]]
                 , [self.timestamps_airquality[0]]
                 , [self.timestamps_airquality[data_co2_max_index]]
-                , [self.timestamps_highres[0]] # TODO which light measure to use?
+                , [self.timestamps_highres[0]]  # TODO which light measure to use?
                 , [self.timestamps_highres[0]]
                 , self.stat_window_status_ts
                 , self.stat_light_status_ts
@@ -275,7 +275,7 @@ class SensorDataCollection:
 sensing = SensorDataCollection()
 
 while 1:
-    dt_period_end = datetime.now() + timedelta(minutes=5) # TODO correlate with CONST_STAT_TIME
+    dt_period_end = datetime.now() + timedelta(minutes=5)  # TODO correlate with CONST_STAT_TIME
     while datetime.now() < dt_period_end:
         sensing.periodical_stats()
 
