@@ -74,7 +74,7 @@ class SensorDataCollection:
     def __reset_values(self):
         # Temperature, pressure and humidty - BME680
         self.data_temp = np_array_init_and_fill(self.arr_size, 0)
-        self.timestamps_temp = np_array_init_and_fill(self.arr_size, "")
+        self.timestamps_temp = [0] * self.arr_size
 
         # self.data_pressure = np_array_init_and_fill(self.arr_size, 0)
         # self.timestamps_pressure = np_array_init_and_fill(self.arr_size, 0)
