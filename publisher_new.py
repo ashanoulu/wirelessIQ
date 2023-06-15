@@ -68,7 +68,7 @@ class SensorDataCollection:
     def __init__(self):
         self.counter = 0
         # self.arr_size = 5
-        self.arr_size = int(CONST_STAT_TIME / CONST_SLEEP_TIMER)  # Collections per hour
+        self.arr_size = 60 # int(CONST_STAT_TIME / CONST_SLEEP_TIMER)  # Collections per hour
         self.extra_counter = 0
         self.__reset_values()
 
@@ -270,15 +270,20 @@ class SensorDataCollection:
             stat_data = util.prepare_payload(array_stat_keys, array_stat_values, array_stat_ts)
             util.send_topics(stat_data, userid, client)
 
+            print("______")
+            print(array_stat_keys, array_stat_values, array_stat_ts)
+
             self.__reset_values()
 
 
 if __name__ == '__main__':
     sensing = SensorDataCollection()
     while 1:
-        dt_period_end = datetime.now() + timedelta(minutes=1) # TODO correlate with CONST_STAT_TIME
-        while datetime.now() < dt_period_end:
-            sensing.periodical_stats()
+        sensing.periodical_stats()
+    # while 1:
+    #     dt_period_end = datetime.now() + timedelta(minutes=1) # TODO correlate with CONST_STAT_TIME
+    #     while datetime.now() < dt_period_end:
+    #         sensing.periodical_stats()
 
 # TODO search and remove print() commands values
 # TODO Remove unnecessary sensor collection
