@@ -262,8 +262,8 @@ class SensorDataCollection:
                 , [self.timestamps_highres[0],self.timestamps_highres[0] ] #self.stat_light_status_ts
             ]
 
-            data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
-            util.send_topics(data, userid, client)
+            # data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
+            # util.send_topics(data, userid, client)
 
             stat_data = util.prepare_payload(array_stat_keys, array_stat_values, array_stat_ts)
             util.send_topics(stat_data, userid, client)
