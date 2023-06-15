@@ -13,6 +13,7 @@ import numpy as np
 # WirelessIQ Parameters
 CONST_SLEEP_TIMER = 2
 CONST_KEEP_ALIVE = 60
+CONST_STAT_TIME = 60 # 3600
 
 # The callback for when the client receives a CONNACK response from the server.
 
@@ -67,7 +68,7 @@ class SensorDataCollection:
     def __init__(self):
         self.counter = 0
         # self.arr_size = 5
-        self.arr_size = int(3600 / CONST_SLEEP_TIMER)  # Collections per hour
+        self.arr_size = int(CONST_STAT_TIME / CONST_SLEEP_TIMER)  # Collections per hour
         self.extra_counter = 0
         self.__reset_values()
 
@@ -275,7 +276,7 @@ class SensorDataCollection:
 if __name__ == '__main__':
     sensing = SensorDataCollection()
     while 1:
-        dt_period_end = datetime.now() + timedelta(hours=1)
+        dt_period_end = datetime.now() + timedelta(minutes=1) # TODO correlate with CONST_STAT_TIME
         while datetime.now() < dt_period_end:
             sensing.periodical_stats()
 
