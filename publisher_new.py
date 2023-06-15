@@ -12,8 +12,8 @@ import numpy as np
 
 # WirelessIQ Parameters
 CONST_SLEEP_TIMER = 2
-CONST_KEEP_ALIVE = 60
-CONST_STAT_TIME = 60  # 3600
+CONST_KEEP_ALIVE = 600
+CONST_STAT_TIME = 300  # 3600
 
 # The callback for when the client receives a CONNACK response from the server.
 
@@ -68,7 +68,7 @@ class SensorDataCollection:
     def __init__(self):
         self.counter = 0
         # self.arr_size = 5
-        self.arr_size = 10  # int(CONST_STAT_TIME / CONST_SLEEP_TIMER)  # Collections per hour
+        self.arr_size = int(CONST_STAT_TIME / CONST_SLEEP_TIMER)  # Collections per hour
         self.extra_counter = 0
         self.__reset_values()
 
@@ -238,15 +238,15 @@ class SensorDataCollection:
 
             array_stat_values = [
                 [self.data_temp.mean()]
-                , [99] #self.data_temp.std()]
+                , [self.data_temp.std()]
                 , [self.data_temp[data_temp_max_index]]
                 , [self.data_airquality.mean()]
-                , [99] #[self.data_airquality.std()]
+                , [self.data_airquality.std()]
                 , [self.data_airquality[data_co2_max_index]]
                 , [self.data_highres.mean()]  # TODO which light measure to use?
-                , [99] # [self.data_highres.std()]
-                , [99,99] # self.stat_window_status
-                , [999,999] # self.stat_light_status
+                , [self.data_highres.std()]
+                , self.stat_window_status
+                , self.stat_light_status
             ]
 
             array_stat_ts = [
@@ -256,12 +256,13 @@ class SensorDataCollection:
                 , [self.timestamps_airquality[0]]
                 , [self.timestamps_airquality[0]]
                 , [self.timestamps_airquality[data_co2_max_index]]
-                , [self.timestamps_highres[0]]  # TODO which light measure to use?
+                , [self.timestamps_highres[0]] # TODO which light measure to use?
                 , [self.timestamps_highres[0]]
-                , [self.timestamps_highres[0],self.timestamps_highres[0] ] #self.stat_window_status_ts
-                , [self.timestamps_highres[0],self.timestamps_highres[0] ] #self.stat_light_status_ts
+                , self.stat_window_status_ts
+                , self.stat_light_status_ts
             ]
 
+            # TODO for raw data convert numpy array to python before sending
             # data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
             # util.send_topics(data, userid, client)
 
@@ -270,19 +271,16 @@ class SensorDataCollection:
 
             self.__reset_values()
 
-    # while 1:
-    #     dt_period_end = datetime.now() + timedelta(minutes=1) # TODO correlate with CONST_STAT_TIME
-    #     while datetime.now() < dt_period_end:
-    #         sensing.periodical_stats()
-
-
-# TODO search and remove print() commands values
-# TODO Remove unnecessary sensor collection
-# Opt : send min:second and infer hour from received time : sensor_api.py: get_timestamp():
 
 sensing = SensorDataCollection()
 
 while 1:
-    sensing.periodical_stats()
+    dt_period_end = datetime.now() + timedelta(minutes=5) # TODO correlate with CONST_STAT_TIME
+    while datetime.now() < dt_period_end:
+        sensing.periodical_stats()
 
 client.loop_forever()
+
+# TODO search and remove print() commands values
+# TODO Remove unnecessary sensor collection
+# Opt : send min:second and infer hour from received time : sensor_api.py: get_timestamp():
