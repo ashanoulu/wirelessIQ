@@ -8,6 +8,7 @@ import smbus
 import sensor_api as sapi
 import util
 from StrDef import StrDef
+from timer_wp import timer
 
 # WirelessIQ Parameters
 CONST_SLEEP_TIMER = StrDef.CONST_SLEEP_TIMER
@@ -158,6 +159,51 @@ class SensorDataCollection:
                 self.stat_window_status_ts.append(self.timestamps_airquality[dfidx + 1])
             dfidx = dfidx + 1
 
+    @timer
+    def stat_calculation(self):
+
+        data_temp_max_index = self.data_temp.argmax(axis=0)
+        data_co2_max_index = self.data_airquality.argmax(axis=0)
+
+        self.collect_window_status()
+        self.collect_light_status()
+
+        # StrDef.ST_TEMPERATURE_AVG
+        # , StrDef.ST_TEMPERATURE_MAX
+        # , StrDef.ST_AIR_QUALITY_AVG
+        # , StrDef.ST_AIR_QUALITY_WORST
+        # , StrDef.ST_LIGHT_AVG
+        # , StrDef.ST_ARR_WINDOWN_STATUS
+        # , StrDef.ST_ARTIFICIAL_LIGHT_STATUS
+
+        array_stat_values = [
+            [self.data_temp.mean()]
+            , [self.data_temp.std()]
+            , [self.data_temp[data_temp_max_index]]
+            , [self.data_airquality.mean()]
+            , [self.data_airquality.std()]
+            , [self.data_airquality[data_co2_max_index]]
+            , [self.data_highres.mean()]  # TODO which light measure to use?
+            , [self.data_highres.std()]
+            , self.stat_window_status
+            , self.stat_light_status
+        ]
+
+        array_stat_ts = [
+            [self.timestamps_temp[0]]
+            , [self.timestamps_temp[0]]
+            , [self.timestamps_temp[data_temp_max_index]]
+            , [self.timestamps_airquality[0]]
+            , [self.timestamps_airquality[0]]
+            , [self.timestamps_airquality[data_co2_max_index]]
+            , [self.timestamps_highres[0]]  # TODO which light measure to use?
+            , [self.timestamps_highres[0]]
+            , self.stat_window_status_ts
+            , self.stat_light_status_ts
+        ]
+
+        return [array_stat_values, array_stat_ts]
+
     def collect_light_status(self):
         diff_array = np.diff(self.data_highres)  # TODO high_res
         dfidx = 0
@@ -182,7 +228,8 @@ class SensorDataCollection:
 
         if self.counter == self.arr_size:
             self.counter = 0
-            t_start = time.time()  # Start timer
+            array_stat, exec_time = self.stat_calculation()
+
             # StrDef.SEN_TEMPERATURE
             # , StrDef.SEN_HUMIDITY
             # , StrDef.SEN_PRESSURE
@@ -221,53 +268,13 @@ class SensorDataCollection:
             #     , self.data_highres
             #     # , self.data_highres2
             # ]
-
-            data_temp_max_index = self.data_temp.argmax(axis=0)
-            data_co2_max_index = self.data_airquality.argmax(axis=0)
-
-            self.collect_window_status()
-            self.collect_light_status()
-
-            # StrDef.ST_TEMPERATURE_AVG
-            # , StrDef.ST_TEMPERATURE_MAX
-            # , StrDef.ST_AIR_QUALITY_AVG
-            # , StrDef.ST_AIR_QUALITY_WORST
-            # , StrDef.ST_LIGHT_AVG
-            # , StrDef.ST_ARR_WINDOWN_STATUS
-            # , StrDef.ST_ARTIFICIAL_LIGHT_STATUS
-
-            array_stat_values = [
-                [self.data_temp.mean()]
-                , [self.data_temp.std()]
-                , [self.data_temp[data_temp_max_index]]
-                , [self.data_airquality.mean()]
-                , [self.data_airquality.std()]
-                , [self.data_airquality[data_co2_max_index]]
-                , [self.data_highres.mean()]  # TODO which light measure to use?
-                , [self.data_highres.std()]
-                , self.stat_window_status
-                , self.stat_light_status
-            ]
-
-            array_stat_ts = [
-                [self.timestamps_temp[0]]
-                , [self.timestamps_temp[0]]
-                , [self.timestamps_temp[data_temp_max_index]]
-                , [self.timestamps_airquality[0]]
-                , [self.timestamps_airquality[0]]
-                , [self.timestamps_airquality[data_co2_max_index]]
-                , [self.timestamps_highres[0]]  # TODO which light measure to use?
-                , [self.timestamps_highres[0]]
-                , self.stat_window_status_ts
-                , self.stat_light_status_ts
-            ]
+            # calc
 
             # TODO for raw data convert numpy array to python before sending
             # data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
             # util.send_topics(data, userid, client)
 
-            t_end = time.time()  # End timer
-            exec_time = t_end - t_start
+            array_stat_values, array_stat_ts = array_stat
             stat_data = util.prepare_payload(array_stat_keys, array_stat_values, array_stat_ts)
             util.send_topics(stat_data, userid, client)
 
@@ -280,7 +287,7 @@ class SensorDataCollection:
 sensing = SensorDataCollection()
 
 while 1:
-    dt_period_end = datetime.now() + timedelta(minutes=60)  # TODO correlate with CONST_STAT_TIME
+    dt_period_end = datetime.now() + timedelta(minutes=2)  # TODO correlate with CONST_STAT_TIME
     while datetime.now() < dt_period_end:
         sensing.periodical_stats()
 

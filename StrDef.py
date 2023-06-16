@@ -22,4 +22,4 @@ class StrDef:
 
     # WirelessIQ Parameters
     CONST_SLEEP_TIMER = 2
-    CONST_STAT_TIME = 3600  # 3600
+    CONST_STAT_TIME = 120  # 3600
