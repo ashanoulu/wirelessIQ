@@ -106,6 +106,7 @@ class SensorDataCollection:
 
     def collect_temperature(self):
         # Temperature sample in celcius
+        bme680_sensor = sapi.sensor_bme680()  # Temperature, and Humidity sensor
         temp_sample, ts_temp = bme680_sensor.get_temp()
         # print(temp_sample, ts_temp)
         self.data_temp[self.counter] = temp_sample
@@ -238,15 +239,15 @@ class SensorDataCollection:
             # , StrDef.SEN_LIGHT_HIGH1
             # , StrDef.SEN_LIGHT_HIGH2
 
-            # array_timestamps_full = [
-            #     self.timestamps_temp
-            #     , self.timestamps_humidity
-            #     , self.timestamps_pressure
-            #     , self.timestamps_airquality
-            #     , self.timestamps_lowres
-            #     , self.timestamps_highres
-            #     , self.timestamps_highres2
-            # ]
+            array_timestamps_full = [
+                self.timestamps_temp
+                # , self.timestamps_humidity
+                # , self.timestamps_pressure
+                , self.timestamps_airquality
+                # , self.timestamps_lowres
+                , self.timestamps_highres
+                # , self.timestamps_highres2
+            ]
 
             # array_timestamps = [
             #     [self.timestamps_temp[0]]
@@ -257,22 +258,21 @@ class SensorDataCollection:
             #     , [self.timestamps_highres[0]]
             #     # , [self.timestamps_highres2[0]]
             # ]
-            #
-            # # TODO numpy to list conversion?
-            # array_sensor_values = [
-            #     self.data_temp
-            #     # , self.data_humidity
-            #     # , self.data_pressure
-            #     , self.data_airquality
-            #     # , self.data_lowres
-            #     , self.data_highres
-            #     # , self.data_highres2
-            # ]
-            # calc
+
+            # TODO numpy to list conversion?
+            array_sensor_values = [
+                self.data_temp
+                # , self.data_humidity
+                # , self.data_pressure
+                , self.data_airquality
+                # , self.data_lowres
+                , self.data_highres
+                # , self.data_highres2
+            ]
 
             # TODO for raw data convert numpy array to python before sending
-            # data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps)
-            # util.send_topics(data, userid, client)
+            data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps_full)
+            util.send_topics(data, userid, client)
 
             array_stat_values, array_stat_ts = array_stat
             stat_data = util.prepare_payload(array_stat_keys, array_stat_values, array_stat_ts)
