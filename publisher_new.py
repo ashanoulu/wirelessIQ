@@ -271,7 +271,7 @@ class SensorDataCollection:
             ]
 
             # TODO for raw data convert numpy array to python before sending
-            data = util.prepare_payload(array_sensor_keys, array_sensor_values, array_timestamps_full)
+            data = util.prepare_payload(array_sensor_keys, np.asarray(array_sensor_values), np.asarray(array_timestamps_full))
             util.send_topics(data, userid, client)
 
             array_stat_values, array_stat_ts = array_stat
