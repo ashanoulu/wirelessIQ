@@ -10,9 +10,9 @@ import util
 from StrDef import StrDef
 
 # WirelessIQ Parameters
-CONST_SLEEP_TIMER = 2
-CONST_KEEP_ALIVE = 600
-CONST_STAT_TIME = 60  # 3600
+CONST_SLEEP_TIMER = StrDef.CONST_SLEEP_TIMER
+CONST_KEEP_ALIVE = 3600 # in seconds
+CONST_STAT_TIME = StrDef.CONST_STAT_TIME
 CONST_LIGHT_DIFF_THRESHOLD = 200
 CONST_AQ_THRESHOLD = 50
 
@@ -273,17 +273,15 @@ class SensorDataCollection:
 
             self.__reset_values()
             print("Execution time:", exec_time)
+            with open("exec_time.txt", "a") as time_f:
+                time_f.write("\nTime: %s" % exec_time)
 
 
 sensing = SensorDataCollection()
 
 while 1:
-    dt_period_end = datetime.now() + timedelta(minutes=5)  # TODO correlate with CONST_STAT_TIME
+    dt_period_end = datetime.now() + timedelta(minutes=60)  # TODO correlate with CONST_STAT_TIME
     while datetime.now() < dt_period_end:
         sensing.periodical_stats()
 
 client.loop_forever()
-
-# TODO search and remove print() commands values
-# TODO Remove unnecessary sensor collection
-# Opt : send min:second and infer hour from received time : sensor_api.py: get_timestamp():

@@ -19,3 +19,7 @@ class StrDef:
     ST_LIGHT_SDV = "light_std"
     ST_ARR_WINDOW_STATUS = "window_status"
     ST_ARTIFICIAL_LIGHT_STATUS = "art_light_status"
+
+    # WirelessIQ Parameters
+    CONST_SLEEP_TIMER = 2
+    CONST_STAT_TIME = 3600  # 3600
