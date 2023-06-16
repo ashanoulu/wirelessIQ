@@ -106,6 +106,7 @@ class SensorDataCollection:
 
     def collect_temperature(self):
         # Temperature sample in celcius
+        bme680_sensor = sapi.sensor_bme680()
         temp_sample, ts_temp = bme680_sensor.get_temp()
         # print(temp_sample, ts_temp)
         self.data_temp[self.counter] = temp_sample
