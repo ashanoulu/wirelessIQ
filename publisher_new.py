@@ -287,7 +287,7 @@ class SensorDataCollection:
 sensing = SensorDataCollection()
 
 while 1:
-    dt_period_end = datetime.now() + timedelta(minutes=2)  # TODO correlate with CONST_STAT_TIME
+    dt_period_end = datetime.now() + timedelta(minutes=60)  # TODO correlate with CONST_STAT_TIME
     while datetime.now() < dt_period_end:
         sensing.periodical_stats()
 
